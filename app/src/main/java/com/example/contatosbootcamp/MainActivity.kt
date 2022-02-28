@@ -1,10 +1,13 @@
 package com.example.contatosbootcamp
 
+import android.content.ContentResolver
 import android.content.pm.PackageManager
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.provider.ContactsContract
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import java.util.jar.Manifest
+import androidx.core.content.ContentResolverCompat.query
+import androidx.core.database.getStringOrNull
 
 class MainActivity : AppCompatActivity() {
     val REQUEST_CONTACT = 1
@@ -33,6 +36,24 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setContacts() {
-        TODO("Not yet implemented")
+        val contactList: ArrayList<Contact> = ArrayList()
+
+        val cursor = contentResolver.query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+        null,
+        null,
+        null,
+        null)
+
+        if (cursor != null) {
+            while (cursor.moveToNext()){
+                contactList.add(
+                    Contact(
+                        cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER))
+                    )
+                )
+            }
+            cursor.close()
+        }
     }
 }
